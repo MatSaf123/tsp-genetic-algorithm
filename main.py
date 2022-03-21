@@ -36,7 +36,7 @@ def generate_random_population(distances_matrix: List[List[int]], seed: int = No
         for _ in range(len(distances_matrix)):
             index_unique = False
             while not index_unique:
-                random_index = get_random_index(1, len(distances_matrix))
+                random_index = get_random_index(0, len(distances_matrix) - 1)
                 if random_index not in temp_slice:
                     index_unique = True
             temp_slice.append(random_index)
@@ -54,7 +54,7 @@ def get_scores_for_population(
         temp_sum = 0
         for j in range(cm_len):
             character_index = characters_matrix[i][j]
-            temp_sum += distances_matrix[i][character_index - 1]
+            temp_sum += distances_matrix[i][character_index]
         scores.append(temp_sum)
         temp_sum = 0
     return scores
