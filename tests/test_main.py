@@ -3,7 +3,8 @@ from main import (
     get_scores_for_population,
     read_from_file,
     create_distances_matrix,
-    get_population_with_scores
+    get_population_with_scores,
+    run_simple_genetic_algorithm,
 )
 
 
@@ -48,5 +49,6 @@ def test_get_scores_for_population():
     expected = [21, 6, 18, 22, 25]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
 
-def test_get_population_with_scores():
-    print(get_population_with_scores("data/test.txt").characters[0].genotype)
+
+# def test_run():
+# run_simple_genetic_algorithm("data/test.txt", 1)

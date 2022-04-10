@@ -1,4 +1,5 @@
 import csv
+from operator import attrgetter
 import random
 from typing import List
 
@@ -30,7 +31,9 @@ def get_random_index(min: int, max: int) -> int:
     return random.randint(min, max)
 
 
-def generate_random_population(distances_matrix: List[List[int]], seed: int = None) -> List[List[int]]:
+def generate_random_population(
+    distances_matrix: List[List[int]], seed: int = None
+) -> List[List[int]]:
     if seed is not None:
         random.seed(seed)
     characters = []
@@ -67,5 +70,45 @@ def get_population_with_scores(path: str) -> Population:
     distances_matrix = create_distances_matrix(read_from_file(path))
     characters = generate_random_population(distances_matrix)
     scores = get_scores_for_population(distances_matrix, characters)
-    return Population([ScoredCharacter(characters[i], scores[i]) for i in range(len(scores))])
+    return Population(
+        [ScoredCharacter(characters[i], scores[i]) for i in range(len(scores))]
+    )
 
+
+def run_tournament_selection(population: Population, k: int, n: int) -> Population:
+    """
+    k: selective pressure value
+    n: population size
+    """
+    return Population(
+        [
+            max(random.sample(population.characters, k), key=attrgetter("score"))
+            for _ in range(n)
+        ]
+    )
+
+
+def run_proportional_selection(population: Population, k: int, n: int) -> Population:
+    """
+    k: selective pressure value
+    n: population size
+    """
+    scores = [sc.score for sc in population.characters]
+    max_score = max(scores)
+    new_scores = [max_score + 1 - score for score in scores]
+    p_sum = sum(new_scores)
+    probabilities = [p / p_sum for p in new_scores]
+    return Population(random.choices(population.characters, probabilities, k=k))
+
+
+def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
+    t = 0
+    population: Population = get_population_with_scores(path)
+    n = len(population.characters)
+    k = 3
+    while t < epochs:
+        print(f"Running iteration: {t}")
+        population_t = run_tournament_selection(population, k, n)
+        # population_t = run_proportional_selection(population, k, n)
+        print(f"Finished iteration: {t}")
+        t += 1
