@@ -1,11 +1,14 @@
+import random
 from main import (
     generate_random_population,
     get_scores_for_population,
     read_from_file,
     create_distances_matrix,
     get_population_with_scores,
+    run_proportional_selection,
     run_simple_genetic_algorithm,
     ox_cross,
+    run_tournament_selection,
 )
 from src.models.Population import Population
 from src.models.ScoredCharacter import ScoredCharacter
@@ -51,6 +54,36 @@ def test_get_scores_for_population():
     characters_matrix = generate_random_population(distances_matrix, 123)
     expected = [21, 6, 18, 22, 25]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
+
+
+def test_run_tournament_selection():
+    random.seed(10)
+    population = get_population_with_scores("data/test.txt")
+    ret = run_tournament_selection(population, 3, 5)
+    expected = [
+        [4, 0, 3, 1, 2],
+        [0, 1, 2, 3, 4],
+        [1, 0, 4, 3, 2],
+        [1, 0, 4, 3, 2],
+        [0, 1, 2, 3, 4],
+    ]
+    for i, character in enumerate(ret.characters):
+        character.genotype == expected[i]
+
+
+def test_run_proportional_selection():
+    random.seed(666)
+    population = get_population_with_scores("data/test.txt")
+    ret = run_proportional_selection(population, 3, 5)
+    expected = [
+        [3, 4, 1, 0, 2],
+        [3, 4, 1, 0, 2],
+        [3, 2, 4, 0, 1],
+        [0, 2, 1, 4, 3],
+        [3, 4, 1, 0, 2],
+    ]
+    for i, character in enumerate(ret.characters):
+        character.genotype == expected[i]
 
 
 def test_ox_cross():

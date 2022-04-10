@@ -83,7 +83,7 @@ def run_tournament_selection(population: Population, k: int, n: int) -> Populati
     """
     return Population(
         [
-            max(random.sample(population.characters, k), key=attrgetter("score"))
+            min(random.sample(population.characters, k), key=attrgetter("score"))
             for _ in range(n)
         ]
     )
@@ -99,10 +99,12 @@ def run_proportional_selection(population: Population, k: int, n: int) -> Popula
     new_scores = [max_score + 1 - score for score in scores]
     p_sum = sum(new_scores)
     probabilities = [p / p_sum for p in new_scores]
-    return Population(random.choices(population.characters, probabilities, k=k))
+    return Population(random.choices(population.characters, probabilities, k=n))
 
 
-def ox_cross(population: Population, genotype_len: int, a=None, b=None) -> Population:
+def ox_cross(
+    population: Population, genotype_len: int, a: int = None, b: int = None
+) -> Population:
     # TODO: implement probability of crossing
 
     new_characters: List[List[int]] = []
