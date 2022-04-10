@@ -2,6 +2,8 @@ import csv
 import random
 from typing import List
 
+from src.models.Population import Population
+
 # TODO: move this away from main.py
 
 
@@ -27,7 +29,7 @@ def get_random_index(min: int, max: int) -> int:
     return random.randint(min, max)
 
 
-def generate_random_population(distances_matrix: List[List[int]], seed: int = None):
+def generate_random_population(distances_matrix: List[List[int]], seed: int = None) -> List[List[int]]:
     if seed is not None:
         random.seed(seed)
     characters = []
@@ -58,3 +60,10 @@ def get_scores_for_population(
         scores.append(temp_sum)
         temp_sum = 0
     return scores
+
+
+def get_population_with_scores(path: str) -> Population:
+    distances_matrix = create_distances_matrix(read_from_file(path))
+    characters = generate_random_population(distances_matrix)
+    scores = get_scores_for_population(distances_matrix, characters)
+    return Population([[characters[i], scores[i]] for i in range(len(scores))])

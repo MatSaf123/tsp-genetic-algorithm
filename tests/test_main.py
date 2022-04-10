@@ -3,6 +3,7 @@ from main import (
     get_scores_for_population,
     read_from_file,
     create_distances_matrix,
+    get_population_with_scores
 )
 
 
@@ -46,3 +47,6 @@ def test_get_scores_for_population():
     characters_matrix = generate_random_population(distances_matrix, 123)
     expected = [21, 6, 18, 22, 25]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
+
+def test_get_population_with_scores():
+    get_population_with_scores("data/test.txt")
