@@ -102,18 +102,19 @@ def run_proportional_selection(population: Population, k: int, n: int) -> Popula
     return Population(random.choices(population.characters, probabilities, k=k))
 
 
-def ox_cross(population: Population, genotype_len) -> Population:
+def ox_cross(population: Population, genotype_len: int, a=None, b=None) -> Population:
     # TODO: implement probability of crossing
 
     new_characters: List[List[int]] = []
     for parent_a, parent_b in zip(
         population.characters[0::2], population.characters[1::2]
     ):
-        break_points = list(range(1, genotype_len))
-        a = random.choice(break_points)
-        break_points.pop(a - 1)
-        b = random.choice(break_points)
-        a, b = sorted([a, b])
+        if a is None or b is None:
+            break_points = list(range(1, genotype_len))
+            a = random.choice(break_points)
+            break_points.pop(a - 1)
+            b = random.choice(break_points)
+            a, b = sorted([a, b])
 
         lefts = parent_a.genotype[:a], parent_b.genotype[:a]
         middles = parent_a.genotype[a:b], parent_b.genotype[a:b]
@@ -124,18 +125,18 @@ def ox_cross(population: Population, genotype_len) -> Population:
             c[a:b] = middles[i]
 
         work_lists = [rights[i] + lefts[i] + middles[i] for i in range(2)]
+        work_lists.reverse()
 
         for i, child in enumerate(children):
             for j in range(genotype_len):
-                if work_lists[i] in child:
+                if work_lists[i][j] in child:
                     continue
                 else:
-                    add_at_first_found_none(child, work_lists[j])
-
-        new_characters.extend(work_lists)
+                    add_at_first_found_none(child, work_lists[i][j])
+        new_characters.extend(children)
 
     # we don't need to compute score at this point
-    return Population([[nc, 0] for nc in new_characters])
+    return Population([ScoredCharacter(nc, 0) for nc in new_characters])
 
 
 def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:

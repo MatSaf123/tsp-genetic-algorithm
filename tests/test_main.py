@@ -5,7 +5,10 @@ from main import (
     create_distances_matrix,
     get_population_with_scores,
     run_simple_genetic_algorithm,
+    ox_cross,
 )
+from src.models.Population import Population
+from src.models.ScoredCharacter import ScoredCharacter
 
 
 def test_read_from_file():
@@ -48,6 +51,19 @@ def test_get_scores_for_population():
     characters_matrix = generate_random_population(distances_matrix, 123)
     expected = [21, 6, 18, 22, 25]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
+
+
+def test_ox_cross():
+    parent_a = [0, 1, 2, 3, 4, 5, 6]
+    parent_b = [4, 5, 1, 0, 3, 2, 6]
+    population = Population(
+        [ScoredCharacter(parent_a, 0), ScoredCharacter(parent_b, 0)]
+    )
+    result = ox_cross(population, 7, 2, 5)
+    assert [result.characters[0].genotype, result.characters[1].genotype] == [
+        [6, 5, 2, 3, 4, 1, 0],
+        [5, 6, 1, 0, 3, 2, 4],
+    ]
 
 
 def test_run():
