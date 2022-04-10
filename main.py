@@ -5,6 +5,7 @@ from typing import List
 
 from src.models.Population import Population
 from src.models.ScoredCharacter import ScoredCharacter
+from src.models.utils import add_at_first_found_none
 
 # TODO: move this away from main.py
 
@@ -101,14 +102,56 @@ def run_proportional_selection(population: Population, k: int, n: int) -> Popula
     return Population(random.choices(population.characters, probabilities, k=k))
 
 
+def ox_cross(population: Population, genotype_len) -> Population:
+    # TODO: implement probability of crossing
+
+    new_characters: List[List[int]] = []
+    for parent_a, parent_b in zip(
+        population.characters[0::2], population.characters[1::2]
+    ):
+        break_points = list(range(1, genotype_len))
+        a = random.choice(break_points)
+        break_points.pop(a - 1)
+        b = random.choice(break_points)
+        a, b = sorted([a, b])
+
+        lefts = parent_a.genotype[:a], parent_b.genotype[:a]
+        middles = parent_a.genotype[a:b], parent_b.genotype[a:b]
+        rights = parent_a.genotype[b:], parent_b.genotype[b:]
+
+        children = [[None] * genotype_len, [None] * genotype_len]
+        for i, c in enumerate(children):
+            c[a:b] = middles[i]
+
+        work_lists = [rights[i] + lefts[i] + middles[i] for i in range(2)]
+
+        for i, child in enumerate(children):
+            for j in range(genotype_len):
+                if work_lists[i] in child:
+                    continue
+                else:
+                    add_at_first_found_none(child, work_lists[j])
+
+        new_characters.extend(work_lists)
+
+    # we don't need to compute score at this point
+    return Population([[nc, 0] for nc in new_characters])
+
+
 def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
     t = 0
     population: Population = get_population_with_scores(path)
     n = len(population.characters)
     k = 3
+    genotype_len = len(population.characters[0].genotype)
     while t < epochs:
         print(f"Running iteration: {t}")
+        print("Running selection...")
         population_t = run_tournament_selection(population, k, n)
         # population_t = run_proportional_selection(population, k, n)
+        print("Selection done.")
+        print("Running crossing...")
+        population_o = ox_cross(population_t, genotype_len)
+        print("Crossing done.")
         print(f"Finished iteration: {t}")
         t += 1

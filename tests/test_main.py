@@ -50,5 +50,5 @@ def test_get_scores_for_population():
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
 
 
-# def test_run():
-# run_simple_genetic_algorithm("data/test.txt", 1)
+def test_run():
+    run_simple_genetic_algorithm("data/test.txt", 1)
