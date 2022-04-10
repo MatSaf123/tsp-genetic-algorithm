@@ -49,4 +49,4 @@ def test_get_scores_for_population():
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
 
 def test_get_population_with_scores():
-    get_population_with_scores("data/test.txt")
+    print(get_population_with_scores("data/test.txt").characters[0].genotype)

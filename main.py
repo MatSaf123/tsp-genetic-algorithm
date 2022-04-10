@@ -3,6 +3,7 @@ import random
 from typing import List
 
 from src.models.Population import Population
+from src.models.ScoredCharacter import ScoredCharacter
 
 # TODO: move this away from main.py
 
@@ -66,4 +67,5 @@ def get_population_with_scores(path: str) -> Population:
     distances_matrix = create_distances_matrix(read_from_file(path))
     characters = generate_random_population(distances_matrix)
     scores = get_scores_for_population(distances_matrix, characters)
-    return Population([[characters[i], scores[i]] for i in range(len(scores))])
+    return Population([ScoredCharacter(characters[i], scores[i]) for i in range(len(scores))])
+
