@@ -9,6 +9,7 @@ from main import (
     run_simple_genetic_algorithm,
     ox_cross,
     run_tournament_selection,
+    swap_mutate,
 )
 from src.models.Population import Population
 from src.models.ScoredCharacter import ScoredCharacter
@@ -99,5 +100,9 @@ def test_ox_cross():
     ]
 
 
-def test_run():
-    run_simple_genetic_algorithm("data/test.txt", 1)
+# def test_swap_mutate():
+#     population = get_population_with_scores("data/test.txt")
+#     swap_mutate(population, 5)
+
+# def test_run():
+#     run_simple_genetic_algorithm("data/berlin52.txt", 1)

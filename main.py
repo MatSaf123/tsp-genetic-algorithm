@@ -12,7 +12,9 @@ from src.models.utils import add_at_first_found_none
 
 def read_from_file(path: str, delimiter=" ") -> List[List[str]]:
     with open(path, newline="") as file:
-        return [row for row in csv.reader(file, delimiter=delimiter)]
+        return [
+            list(filter(None, row)) for row in csv.reader(file, delimiter=delimiter)
+        ]
 
 
 def create_distances_matrix(data: List[List[int]]) -> List[List[int]]:
@@ -141,12 +143,28 @@ def ox_cross(
     return Population([ScoredCharacter(nc, 0) for nc in new_characters])
 
 
+def swap_mutate(population: Population, genotype_len: int) -> Population:
+    # TODO: implement probability of mutation
+    # TODO: more iterations of mutate
+
+    for character in population.characters:
+        a, b = [get_random_index(0, genotype_len - 1) for _ in range(2)]
+        while a == b:
+            b = get_random_index(0, genotype_len - 1)
+        temp = character.genotype[a]
+        character.genotype[a] = character.genotype[b]
+        character.genotype[b] = temp
+    return population
+
+
 def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
     t = 0
     population: Population = get_population_with_scores(path)
     n = len(population.characters)
     k = 3
     genotype_len = len(population.characters[0].genotype)
+    distances_matrix = create_distances_matrix(read_from_file(path))
+
     while t < epochs:
         print(f"Running iteration: {t}")
         print("Running selection...")
@@ -156,5 +174,18 @@ def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
         print("Running crossing...")
         population_o = ox_cross(population_t, genotype_len)
         print("Crossing done.")
+        print("Running mutation...")
+        population_o = swap_mutate(population_o, genotype_len)
+        print("Mutation done.")
+        print("Scoring...")
+        scores = get_scores_for_population(
+            distances_matrix,
+            [character.genotype for character in population_o.characters],
+        )
+        population.characters = population_o.characters
+        for i, character in enumerate(population.characters):
+            character.score = scores[i]
         print(f"Finished iteration: {t}")
         t += 1
+
+    print("sum:", sum([ele.score for ele in population.characters]))
