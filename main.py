@@ -115,7 +115,7 @@ def ox_cross(
     for parent_a, parent_b in zip(
         population.characters[0::2], population.characters[1::2]
     ):
-        if random.uniform(0, 1) < chance:
+        if random.uniform(0, 1) > chance:
             new_characters.extend([parent_a.genotype, parent_b.genotype])
             continue
 
@@ -154,7 +154,7 @@ def swap_mutate(
 ) -> Population:
 
     for character in population.characters:
-        if random.uniform(0, 1) < chance:
+        if random.uniform(0, 1) > chance:
             continue
 
         for a in range(genotype_len):
