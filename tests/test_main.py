@@ -110,4 +110,4 @@ def test_ox_cross():
 
 def test_run():
     random.seed(None)
-    run_simple_genetic_algorithm("data/test.txt", 10000)
+    run_simple_genetic_algorithm("data/berlin52.txt", 10000)

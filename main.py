@@ -101,14 +101,17 @@ def run_proportional_selection(population: Population, n: int) -> Population:
 
 
 def ox_cross(
-    population: Population, genotype_len: int, a: int = None, b: int = None
+    population: Population, genotype_len: int, a: int = None, b: int = None, chance: int = 0.5
 ) -> Population:
-    # TODO: implement probability of crossing
 
     new_characters: List[List[int]] = []
     for parent_a, parent_b in zip(
         population.characters[0::2], population.characters[1::2]
     ):
+        if random.uniform(0, 1) < chance:
+            new_characters.extend([parent_a.genotype, parent_b.genotype])
+            continue
+
         if a is None or b is None:
             break_points = list(range(1, genotype_len))
             a = random.choice(break_points)
@@ -139,10 +142,12 @@ def ox_cross(
     return Population([ScoredCharacter(nc, 0) for nc in new_characters])
 
 
-def swap_mutate(population: Population, genotype_len: int) -> Population:
-    # TODO: implement probability of mutation
+def swap_mutate(population: Population, genotype_len: int, chance: int = 0.5) -> Population:
 
     for character in population.characters:
+        if random.uniform(0, 1) < chance:
+            continue
+
         for a in range(genotype_len):
             b = get_random_index(0, genotype_len - 1)
             while a == b:
@@ -157,9 +162,10 @@ def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
     t = 0
     population: Population = get_population_with_scores(path)
     n = len(population.characters)
-    k = 3
+    k = 32
     genotype_len = len(population.characters[0].genotype)
     distances_matrix = create_distances_matrix(read_from_file(path))
+    min_global = min(random.sample(population.characters, k), key=attrgetter("score"))
 
     while t < epochs:
         print(f"Running iteration: {t}")
@@ -174,9 +180,11 @@ def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
         population.characters = population_o.characters
         for i, character in enumerate(population.characters):
             character.score = scores[i]
-        scores = [ele.score for ele in population.characters]
-        print("min:", min(scores))
+
+        min_local = min(random.sample(population.characters, k), key=attrgetter("score"))
+        print("min_local:", min_local.score)
+        if min_local.score < min_global.score:
+            min_global = min_local
         t += 1
 
-    scores = [ele.score for ele in population.characters]
-    print("min:", min(scores))
+    print("min_global:", min_global.score)
