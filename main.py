@@ -167,6 +167,28 @@ def swap_mutate(
     return population
 
 
+def inversion_mutate(
+    population: Population, genotype_len: int, chance: int = 0.5
+) -> Population:
+
+    for character in population.characters:
+        if random.uniform(0, 1) > chance:
+            continue
+
+        break_points = list(range(1, genotype_len))
+        a = random.choice(break_points)
+        break_points.pop(a - 1)
+        b = random.choice(break_points)
+        a, b = sorted([a, b])
+
+        left = character.genotype[:a]
+        middle = character.genotype[a:b]
+        right = character.genotype[b:]
+        middle.reverse()
+        character.genotype = left + middle + right
+    return population
+
+
 def run_simple_genetic_algorithm(
     path: str, k: int, n: int, chance_cross: float, chance_mut: float, epochs: int = 100
 ) -> None:
@@ -181,7 +203,12 @@ def run_simple_genetic_algorithm(
         population_t = run_tournament_selection(population, k, n)
         # population_t = run_proportional_selection(population, n)
         population_o = ox_cross(population_t, genotype_len, chance_cross)
-        population_o = swap_mutate(population_o, genotype_len, chance_mut)
+
+        if t / epochs < 0.33:
+            population_o = swap_mutate(population_o, genotype_len, chance_mut)
+        else:
+            population_o = inversion_mutate(population_o, genotype_len, chance_mut)
+
         scores = get_scores_for_population(
             distances_matrix,
             [character.genotype for character in population_o.characters],
