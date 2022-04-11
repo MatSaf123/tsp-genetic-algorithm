@@ -57,10 +57,10 @@ def test_get_scores_for_population():
     ret = get_scores_for_population(distances_matrix, sample_population)
     assert ret == [25]
 
-    characters_matrix = generate_random_population(len(distances_matrix), 123)
+    characters_matrix = generate_random_population(len(distances_matrix), 5, 123)
     expected = [19, 27, 25, 19, 21]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
-    characters_matrix_2 = generate_random_population(len(distances_matrix), 321)
+    characters_matrix_2 = generate_random_population(len(distances_matrix), 5, 321)
     assert characters_matrix != characters_matrix_2
     assert get_scores_for_population(distances_matrix, characters_matrix_2) != expected
 
@@ -101,7 +101,7 @@ def test_ox_cross():
     population = Population(
         [ScoredCharacter(parent_a, 0), ScoredCharacter(parent_b, 0)]
     )
-    result = ox_cross(population, 7, 2, 5)
+    result = ox_cross(population, 7, 2, 5, 0)
     assert [result.characters[0].genotype, result.characters[1].genotype] == [
         [6, 5, 2, 3, 4, 1, 0],
         [5, 6, 1, 0, 3, 2, 4],
@@ -110,4 +110,12 @@ def test_ox_cross():
 
 def test_run():
     random.seed(None)
-    run_simple_genetic_algorithm("data/berlin52.txt", 16, 200, 0.8, 0.6, 500)
+    # run_simple_genetic_algorithm("data/berlin52.txt", 16, 200, 0.8, 0.6, 500)
+    parent_a = [2, 4, 7, 1, 3, 6, 8, 9, 5]
+    parent_b = [5, 9, 8, 6, 2, 4, 1, 3, 7]
+    population = Population(
+        [ScoredCharacter(parent_a, 0), ScoredCharacter(parent_b, 0)]
+    )
+    result = ox_cross(population, 9, 3, 6, 1)
+    for ele in result.characters:
+        print(ele.genotype)
