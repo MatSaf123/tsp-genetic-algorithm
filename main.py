@@ -34,16 +34,16 @@ def get_random_index(min: int, max: int) -> int:
     return random.randint(min, max)
 
 
-def generate_random_population(n: int, seed: int = None) -> List[List[int]]:
+def generate_random_population(n: int, len_dm: int, seed: int = None) -> List[List[int]]:
     if seed is not None:
         random.seed(seed)
     characters = []
     for _ in range(n):
         temp_slice = []
-        for _ in range(n):
+        for _ in range(len_dm):
             index_unique = False
             while not index_unique:
-                random_index = get_random_index(0, n - 1)
+                random_index = get_random_index(0, len_dm - 1)
                 if random_index not in temp_slice:
                     index_unique = True
             temp_slice.append(random_index)
@@ -53,7 +53,7 @@ def generate_random_population(n: int, seed: int = None) -> List[List[int]]:
 
 
 def get_scores_for_population(
-    distances_matrix: List[List[int]], characters_matrix: List[List[int]]
+    distances_matrix: List[List[int]], characters_matrix: List[List[int]],
 ) -> List[int]:
     scores = []
     char_len = len(characters_matrix[0])
@@ -66,9 +66,9 @@ def get_scores_for_population(
     return scores
 
 
-def get_population_with_scores(path: str) -> Population:
+def get_population_with_scores(path: str, n: int) -> Population:
     distances_matrix = create_distances_matrix(read_from_file(path))
-    characters = generate_random_population(len(distances_matrix))
+    characters = generate_random_population(n, len(distances_matrix))
     scores = get_scores_for_population(distances_matrix, characters)
     return Population(
         [ScoredCharacter(characters[i], scores[i]) for i in range(len(scores))]
@@ -158,11 +158,9 @@ def swap_mutate(population: Population, genotype_len: int, chance: int = 0.5) ->
     return population
 
 
-def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
+def run_simple_genetic_algorithm(path: str, k: int, n: int, chance_cross: float, chance_mut: float, epochs: int = 100) -> None:
     t = 0
-    population: Population = get_population_with_scores(path)
-    n = len(population.characters)
-    k = 32
+    population: Population = get_population_with_scores(path, n)
     genotype_len = len(population.characters[0].genotype)
     distances_matrix = create_distances_matrix(read_from_file(path))
     min_global = min(random.sample(population.characters, k), key=attrgetter("score"))
@@ -171,20 +169,20 @@ def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
         print(f"Running iteration: {t}")
         population_t = run_tournament_selection(population, k, n)
         # population_t = run_proportional_selection(population, n)
-        population_o = ox_cross(population_t, genotype_len)
-        population_o = swap_mutate(population_o, genotype_len)
+        population_o = ox_cross(population_t, genotype_len, chance_cross)
+        population_o = swap_mutate(population_o, genotype_len, chance_mut)
         scores = get_scores_for_population(
             distances_matrix,
             [character.genotype for character in population_o.characters],
         )
-        population.characters = population_o.characters
-        for i, character in enumerate(population.characters):
-            character.score = scores[i]
+
+        population = Population([ScoredCharacter(c.genotype, scores[i]) for i, c in enumerate(population_o.characters)])
 
         min_local = min(random.sample(population.characters, k), key=attrgetter("score"))
         print("min_local:", min_local.score)
         if min_local.score < min_global.score:
             min_global = min_local
         t += 1
+
 
     print("min_global:", min_global.score)

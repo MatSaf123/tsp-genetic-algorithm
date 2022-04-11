@@ -46,8 +46,8 @@ def test_generate_random_population():
         [1, 0, 2, 3, 4],
         [3, 2, 0, 4, 1],
     ]
-    assert generate_random_population(5, 123) == expected
-    assert generate_random_population(5, 321) != expected
+    assert generate_random_population(5, 5, 123) == expected
+    assert generate_random_population(5, 5, 321) != expected
 
 
 def test_get_scores_for_population():
@@ -67,7 +67,7 @@ def test_get_scores_for_population():
 
 def test_run_tournament_selection():
     random.seed(10)
-    population = get_population_with_scores("data/test.txt")
+    population = get_population_with_scores("data/test.txt", 5)
     ret = run_tournament_selection(population, 3, 5)
     expected = [
         [4, 0, 3, 1, 2],
@@ -82,7 +82,7 @@ def test_run_tournament_selection():
 
 def test_run_proportional_selection():
     random.seed(666)
-    population = get_population_with_scores("data/test.txt")
+    population = get_population_with_scores("data/test.txt", 5)
     ret = run_proportional_selection(population, 5)
     expected = [
         [3, 4, 1, 0, 2],
@@ -110,4 +110,4 @@ def test_ox_cross():
 
 def test_run():
     random.seed(None)
-    run_simple_genetic_algorithm("data/berlin52.txt", 10000)
+    run_simple_genetic_algorithm("data/berlin52.txt", 40, 100, 0.5, 0.2, 1000)
