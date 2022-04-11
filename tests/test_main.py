@@ -52,6 +52,11 @@ def test_generate_random_population():
 
 def test_get_scores_for_population():
     distances_matrix = create_distances_matrix(read_from_file("data/test.txt"))
+
+    sample_population = [[0, 1, 2, 3, 4]]
+    ret = get_scores_for_population(distances_matrix, sample_population)
+    assert ret == [25]
+
     characters_matrix = generate_random_population(len(distances_matrix), 123)
     expected = [19, 27, 25, 19, 21]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
