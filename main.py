@@ -5,7 +5,7 @@ from typing import List
 
 from src.models.Population import Population
 from src.models.ScoredCharacter import ScoredCharacter
-from src.models.utils import add_at_first_found_none
+from src.models.utils import add_at_first_found_none, print_result
 
 # TODO: move this away from main.py
 
@@ -34,7 +34,9 @@ def get_random_index(min: int, max: int) -> int:
     return random.randint(min, max)
 
 
-def generate_random_population(n: int, len_dm: int, seed: int = None) -> List[List[int]]:
+def generate_random_population(
+    n: int, len_dm: int, seed: int = None
+) -> List[List[int]]:
     if seed is not None:
         random.seed(seed)
     characters = []
@@ -53,7 +55,8 @@ def generate_random_population(n: int, len_dm: int, seed: int = None) -> List[Li
 
 
 def get_scores_for_population(
-    distances_matrix: List[List[int]], characters_matrix: List[List[int]],
+    distances_matrix: List[List[int]],
+    characters_matrix: List[List[int]],
 ) -> List[int]:
     scores = []
     char_len = len(characters_matrix[0])
@@ -101,7 +104,11 @@ def run_proportional_selection(population: Population, n: int) -> Population:
 
 
 def ox_cross(
-    population: Population, genotype_len: int, a: int = None, b: int = None, chance: int = 0.5
+    population: Population,
+    genotype_len: int,
+    a: int = None,
+    b: int = None,
+    chance: int = 0.5,
 ) -> Population:
 
     new_characters: List[List[int]] = []
@@ -142,7 +149,9 @@ def ox_cross(
     return Population([ScoredCharacter(nc, 0) for nc in new_characters])
 
 
-def swap_mutate(population: Population, genotype_len: int, chance: int = 0.5) -> Population:
+def swap_mutate(
+    population: Population, genotype_len: int, chance: int = 0.5
+) -> Population:
 
     for character in population.characters:
         if random.uniform(0, 1) < chance:
@@ -158,7 +167,9 @@ def swap_mutate(population: Population, genotype_len: int, chance: int = 0.5) ->
     return population
 
 
-def run_simple_genetic_algorithm(path: str, k: int, n: int, chance_cross: float, chance_mut: float, epochs: int = 100) -> None:
+def run_simple_genetic_algorithm(
+    path: str, k: int, n: int, chance_cross: float, chance_mut: float, epochs: int = 100
+) -> None:
     t = 0
     population: Population = get_population_with_scores(path, n)
     genotype_len = len(population.characters[0].genotype)
@@ -176,13 +187,19 @@ def run_simple_genetic_algorithm(path: str, k: int, n: int, chance_cross: float,
             [character.genotype for character in population_o.characters],
         )
 
-        population = Population([ScoredCharacter(c.genotype, scores[i]) for i, c in enumerate(population_o.characters)])
+        population = Population(
+            [
+                ScoredCharacter(c.genotype, scores[i])
+                for i, c in enumerate(population_o.characters)
+            ]
+        )
 
-        min_local = min(random.sample(population.characters, k), key=attrgetter("score"))
+        min_local = min(
+            random.sample(population.characters, k), key=attrgetter("score")
+        )
         print("min_local:", min_local.score)
         if min_local.score < min_global.score:
             min_global = min_local
         t += 1
 
-
-    print("min_global:", min_global.score)
+    print_result(min_global)
