@@ -39,7 +39,6 @@ def test_create_distances_matrix():
 
 
 def test_generate_random_population():
-    distances_matrix = create_distances_matrix(read_from_file("data/test.txt"))
     expected = [
         [0, 2, 3, 4, 1],
         [1, 2, 4, 0, 3],
@@ -47,14 +46,18 @@ def test_generate_random_population():
         [1, 0, 2, 3, 4],
         [3, 2, 0, 4, 1],
     ]
-    assert generate_random_population(distances_matrix, 123) == expected
+    assert generate_random_population(5, 123) == expected
+    assert generate_random_population(5, 321) != expected
 
 
 def test_get_scores_for_population():
     distances_matrix = create_distances_matrix(read_from_file("data/test.txt"))
-    characters_matrix = generate_random_population(distances_matrix, 123)
-    expected = [21, 6, 18, 22, 25]
+    characters_matrix = generate_random_population(len(distances_matrix), 123)
+    expected = [19, 27, 25, 19, 21]
     assert get_scores_for_population(distances_matrix, characters_matrix) == expected
+    characters_matrix_2 = generate_random_population(len(distances_matrix), 321)
+    assert characters_matrix != characters_matrix_2
+    assert get_scores_for_population(distances_matrix, characters_matrix_2) != expected
 
 
 def test_run_tournament_selection():
@@ -100,9 +103,6 @@ def test_ox_cross():
     ]
 
 
-# def test_swap_mutate():
-#     population = get_population_with_scores("data/test.txt")
-#     swap_mutate(population, 5)
-
-# def test_run():
-#     run_simple_genetic_algorithm("data/berlin52.txt", 1)
+def test_run():
+    random.seed(None)
+    run_simple_genetic_algorithm("data/test.txt", 10000)
