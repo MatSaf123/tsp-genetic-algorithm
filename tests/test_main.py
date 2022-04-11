@@ -78,7 +78,7 @@ def test_run_tournament_selection():
 def test_run_proportional_selection():
     random.seed(666)
     population = get_population_with_scores("data/test.txt")
-    ret = run_proportional_selection(population, 3, 5)
+    ret = run_proportional_selection(population, 5)
     expected = [
         [3, 4, 1, 0, 2],
         [3, 4, 1, 0, 2],

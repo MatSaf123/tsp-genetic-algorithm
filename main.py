@@ -88,12 +88,10 @@ def run_tournament_selection(population: Population, k: int, n: int) -> Populati
     )
 
 
-def run_proportional_selection(population: Population, k: int, n: int) -> Population:
+def run_proportional_selection(population: Population, n: int) -> Population:
     """
-    k: selective pressure value
     n: population size
     """
-    # TODO: k not accessed
     scores = [sc.score for sc in population.characters]
     max_score = max(scores)
     new_scores = [max_score + 1 - score for score in scores]
@@ -166,7 +164,7 @@ def run_simple_genetic_algorithm(path: str, epochs: int = 100) -> None:
     while t < epochs:
         print(f"Running iteration: {t}")
         population_t = run_tournament_selection(population, k, n)
-        # population_t = run_proportional_selection(population, k, n)
+        # population_t = run_proportional_selection(population, n)
         population_o = ox_cross(population_t, genotype_len)
         population_o = swap_mutate(population_o, genotype_len)
         scores = get_scores_for_population(
