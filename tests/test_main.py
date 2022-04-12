@@ -9,7 +9,6 @@ from main import (
     run_simple_genetic_algorithm,
     ox_cross,
     run_tournament_selection,
-    swap_mutate,
 )
 from src.models.Population import Population
 from src.models.ScoredCharacter import ScoredCharacter
