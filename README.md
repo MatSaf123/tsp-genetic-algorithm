@@ -1,6 +1,6 @@
-### Resolving traveling salesman problem with simple genetic algorithm
+### Resolving travelling salesman problem with simple genetic algorithm
 
-Made as a part of machine learning classes at University of Economics in Katowice, 2022.
+Made as a part of ML / AI use cases classes at University of Economics in Katowice, 2022.
 
 Run with
 `python3 cli.py <filepath> <selective pressure> <population size> <crossing rate> <mutation rate> <epochs>`
