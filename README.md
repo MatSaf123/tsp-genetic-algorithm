@@ -16,3 +16,5 @@ where filepath is the location of the file with data for the distances matrix (s
 
 An example:
 `python3 cli.py data/berlin52.txt 5 200 0.75 0.05 1000`
+
+Data was taken from http://comopt.ifi.uni-heidelberg.de/software/TSPLIB95/tsp/, and even more datasets are available in there.
